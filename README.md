@@ -1,0 +1,1 @@
+# Konlis.HammingCode
