@@ -23,9 +23,25 @@ public class HammingCodeCalculator
         VerifyCorrectnessFlipZeroAndOneBits("00000000000000000000000000");
         VerifyCorrectnessFlipZeroAndOneBits("11111111111111111111111111");
         VerifyCorrectnessFlipZeroAndOneBits("01001000101000100010011000");
+
+        const int veryLongStringLength = 1000 * 1000;
+        string veryLongString = string.Join("", Enumerable.Range(0, veryLongStringLength).Select(x => random.Next(2)));
+        VerifyCorrectnessFlipZeroAndOneBits(veryLongString, veryLongStringLength / 100);
     }
 
     static void VerifyCorrectnessFlipZeroAndOneBits(string val)
+    {
+        VerifyCorrectnessFlipZeroAndOneBits(val, 1);
+    }
+
+
+    /// <summary>
+    /// Verification routing, tests that decode on non-corrupt and single-bit error works OK
+    /// </summary>
+    /// <param name="val">Non-empty string of 0s and 1s</param>
+    /// <param name="bitFlipStep">For very long string it's too time consuming to test flipping every bit,
+    /// so user may choose to only flip every Nth bit of the encoded message</param>
+    static void VerifyCorrectnessFlipZeroAndOneBits(string val, int bitFlipStep)
     {
         bool[] encoded = Encode(val);
 
@@ -35,7 +51,7 @@ public class HammingCodeCalculator
         }
 
         // try flipping every bit of message one by one
-        for (int i = 0; i < encoded.Length; i++)
+        for (int i = 0; i < encoded.Length; i += bitFlipStep)
         {
             encoded[i] = !encoded[i];
             {
@@ -71,11 +87,12 @@ public class HammingCodeCalculator
     }
 
     /// <summary>
-    /// Encodes string consisting of 0 and 1 to binary array, data interleaved with Hamming code parity bits
+    /// Encodes string consisting of 0 and 1 to binary array, data interleaved with Hamming code parity bits.
+    /// WARNING: doesn't have any overflow checks.
     /// </summary>
     /// <param name="boolStr">string consisting of 0 and 1, non-empty</param>
     /// <returns>Hamming-code encoded data</returns>
-    static bool[] Encode(string boolStr)
+    public static bool[] Encode(string boolStr)
     {
         if(boolStr == null || boolStr.Length == 0 || boolStr.Any(x => !(x == '0' || x == '1')))
         {
