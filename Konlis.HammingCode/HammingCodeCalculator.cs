@@ -70,8 +70,17 @@ public class HammingCodeCalculator
         return parityBitCount;
     }
 
+    /// <summary>
+    /// Encodes string consisting of 0 and 1 to binary array, data interleaved with Hamming code parity bits
+    /// </summary>
+    /// <param name="boolStr">string consisting of 0 and 1, non-empty</param>
+    /// <returns>Hamming-code encoded data</returns>
     static bool[] Encode(string boolStr)
     {
+        if(boolStr == null || boolStr.Length == 0 || boolStr.Any(x => !(x == '0' || x == '1')))
+        {
+            throw new InvalidDataException("expecting non-empty string consisting of 0s and 1s");
+        }
         int parityBitCount = SolveParityBitCount(boolStr.Length);
         int totalLen = parityBitCount + boolStr.Length;
         bool[] encoded = new bool[totalLen];
